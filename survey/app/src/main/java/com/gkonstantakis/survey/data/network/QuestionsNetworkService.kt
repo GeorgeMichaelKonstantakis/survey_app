@@ -1,6 +1,5 @@
 package com.gkonstantakis.survey.data.network
 
-import com.gkonstantakis.survey.data.models.Answer
 import com.gkonstantakis.survey.data.network.entities.AnswerNetworkEntity
 import com.gkonstantakis.survey.data.network.entities.QuestionsNetworkEntity
 import retrofit2.http.GET

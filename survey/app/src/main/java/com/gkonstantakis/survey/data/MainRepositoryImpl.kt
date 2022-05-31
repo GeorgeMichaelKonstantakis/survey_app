@@ -71,6 +71,15 @@ class MainRepositoryImpl(
         }
     }
 
+    override suspend fun insertQuestion(question: Question) {
+        try{
+            val databaseQuestion = questionCacheMapper.mapToEntity(question)
+            surveyDao.insertQuestion(databaseQuestion)
+        } catch (e: Exception){
+
+        }
+    }
+
     override suspend fun deleteQuestions() {
         try {
             surveyDao.deleteQuestions()

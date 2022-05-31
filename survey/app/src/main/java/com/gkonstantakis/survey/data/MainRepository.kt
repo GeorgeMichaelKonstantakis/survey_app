@@ -13,6 +13,8 @@ interface MainRepository {
 
     suspend fun postAnswer(answer: Answer)
 
+    suspend fun insertQuestion(question: Question)
+
     suspend fun deleteQuestions()
 
     suspend fun deleteAnswers()
