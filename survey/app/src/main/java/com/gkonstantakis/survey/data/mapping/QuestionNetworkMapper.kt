@@ -2,7 +2,6 @@ package com.gkonstantakis.survey.data.mapping
 
 import com.gkonstantakis.survey.data.models.Question
 import com.gkonstantakis.survey.data.network.entities.QuestionNetworkEntity
-import com.gkonstantakis.survey.data.network.entities.QuestionsNetworkEntity
 
 class QuestionNetworkMapper {
     fun mapFromEntity(entity: QuestionNetworkEntity): Question {
@@ -19,8 +18,8 @@ class QuestionNetworkMapper {
         )
     }
 
-    fun mapFromListOfEntities(entities: QuestionsNetworkEntity): List<Question> {
-        return entities.questionNetworkEntities.map {
+    fun mapFromListOfEntities(entities: List<QuestionNetworkEntity>): List<Question> {
+        return entities.map {
             mapFromEntity(it)
         }
     }

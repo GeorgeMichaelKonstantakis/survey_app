@@ -11,11 +11,5 @@ interface MainRepository {
 
     suspend fun getAnswers(): Flow<DataState<List<Answer>>>
 
-    suspend fun postAnswer(answer: Answer)
-
-    suspend fun insertQuestion(question: Question)
-
-    suspend fun deleteQuestions()
-
-    suspend fun deleteAnswers()
+    suspend fun postAnswer(answer: Answer): Flow<DataState<List<Answer>>>
 }

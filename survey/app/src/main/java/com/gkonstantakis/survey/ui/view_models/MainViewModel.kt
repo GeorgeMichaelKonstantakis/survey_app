@@ -9,12 +9,16 @@ import com.gkonstantakis.survey.data.models.Answer
 import com.gkonstantakis.survey.data.models.Question
 import com.gkonstantakis.survey.data.utils.DataState
 import com.gkonstantakis.survey.ui.models.MainStateEventParameters
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val mainRepository: MainRepositoryImpl
 ) : ViewModel() {
+
+    var pageCount: MutableLiveData<Int> = MutableLiveData(0)
 
     private var _questionDataState: MutableLiveData<DataState<List<Question>>> = MutableLiveData()
 
@@ -26,36 +30,40 @@ class MainViewModel(
     val answerDataState: LiveData<DataState<List<Answer>>>
         get() = _answerDataState
 
+    var _postAnswerState: MutableLiveData<DataState<List<Answer>>> = MutableLiveData()
+    val postAnswerState: LiveData<DataState<List<Answer>>>
+        get() = _postAnswerState
 
-    fun setStateEvent(
+    fun setDataStateEvent(
         mainStateEvent: MainStateEvent,
-        mainStateEventParameters: MainStateEventParameters
+        mainStateEventParameters: MainStateEventParameters?
     ) {
         viewModelScope.launch {
             when (mainStateEvent) {
                 is MainStateEvent.GetQuestionEvent -> {
                     mainRepository.getQuestions().onEach {
                         _questionDataState.value = it
-                    }
+                    }.launchIn(viewModelScope)
                 }
                 is MainStateEvent.GetAnswersEvent -> {
                     mainRepository.getAnswers().onEach {
                         _answerDataState.value = it
-                    }
+                    }.launchIn(viewModelScope)
                 }
                 is MainStateEvent.PostAnswerEvent -> {
-                    mainRepository.postAnswer(mainStateEventParameters.answer)
-                }
-                is MainStateEvent.InsertQuestionEvent -> {
-                    mainRepository.insertQuestion(mainStateEventParameters.question)
-                }
-                is MainStateEvent.DeleteQuestionsEvent -> {
-                    mainRepository.deleteQuestions()
-                }
-                is MainStateEvent.DeleteAnswersEvent -> {
-                    mainRepository.deleteAnswers()
+                    if (mainStateEventParameters != null) {
+                        mainRepository.postAnswer(mainStateEventParameters.answer).onEach {
+                            _postAnswerState.value = it
+                        }.launchIn(viewModelScope)
+                    }
                 }
             }
+        }
+    }
+
+    fun setPageCount(count: Int) {
+        viewModelScope.launch {
+            pageCount.value = count
         }
     }
 }
@@ -67,12 +75,4 @@ sealed class MainStateEvent {
     object GetAnswersEvent : MainStateEvent()
 
     object PostAnswerEvent : MainStateEvent()
-
-    object InsertQuestionEvent : MainStateEvent()
-
-    object DeleteQuestionsEvent : MainStateEvent()
-
-    object DeleteAnswersEvent : MainStateEvent()
-
-    object None : MainStateEvent()
 }

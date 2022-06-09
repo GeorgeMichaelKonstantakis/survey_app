@@ -2,12 +2,12 @@ package com.gkonstantakis.survey
 
 import android.app.Application
 import androidx.room.Room
+import com.gkonstantakis.survey.data.MainRepository
 import com.gkonstantakis.survey.data.MainRepositoryImpl
 import com.gkonstantakis.survey.data.database.SurveyDao
 import com.gkonstantakis.survey.data.database.SurveyDatabase
 import com.gkonstantakis.survey.data.mapping.AnswerCacheMapper
 import com.gkonstantakis.survey.data.mapping.AnswerNetworkMapper
-import com.gkonstantakis.survey.data.mapping.QuestionCacheMapper
 import com.gkonstantakis.survey.data.mapping.QuestionNetworkMapper
 import com.gkonstantakis.survey.data.network.Constant
 import com.gkonstantakis.survey.data.network.QuestionsNetworkService
@@ -43,8 +43,7 @@ class SurveyApplication : Application() {
         mainRepository = questionsNetworkService.let {
             MainRepositoryImpl(
                 surveyDao,
-                it, AnswerCacheMapper(), AnswerNetworkMapper(), QuestionCacheMapper(),
-                QuestionNetworkMapper()
+                it, AnswerCacheMapper(), AnswerNetworkMapper(), QuestionNetworkMapper()
             )
         }
     }

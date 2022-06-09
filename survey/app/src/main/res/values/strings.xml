@@ -2,4 +2,7 @@
     <string name="app_name">survey</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="error_database_answers_message">Could not load answers. Please try again.</string>
+    <string name="error_network_questions_message">Could not load questions. Please check your internet connection and try again.</string>
 </resources>
