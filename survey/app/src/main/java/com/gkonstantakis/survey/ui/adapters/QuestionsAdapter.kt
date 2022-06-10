@@ -1,9 +1,11 @@
 package com.gkonstantakis.survey.ui.adapters
 
+import android.graphics.Color
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
@@ -42,25 +44,14 @@ class QuestionsAdapter(
         holder.itemView.apply {
             val questionListItem = questionsList[position]
 
+            Log.e("onBindViewHolder","ENTER: questionItem: "+questionListItem.toString())
+
             var answerToSubmit = ""
 
             val questionText = adapterBinding?.questionText
             val answerText = adapterBinding?.answerText
             val submitButton = adapterBinding?.submitButton
-
-            viewModel.postAnswerState.observe(lifecycleOwner, Observer { datastate ->
-                when (datastate) {
-                    is DataState.SuccessPostAnswer<List<Answer>> -> {
-                        submitButton?.isEnabled = false
-                        answerText?.isEnabled = false
-                    }
-                    is DataState.ErrorPostAnswer -> {
-                        submitButton?.isEnabled = true
-                        answerText?.isEnabled = true
-                        submitButton?.text = "Try Again"
-                    }
-                }
-            })
+            val submitTextMessage = adapterBinding?.submitTextMessage
 
             questionText?.text = questionListItem.question
             if (questionListItem.answer != null) {
@@ -79,6 +70,31 @@ class QuestionsAdapter(
                     Log.e("answerToSubmit",""+answerToSubmit)
                 }
 
+            })
+
+            viewModel.postAnswerState.observe(lifecycleOwner, Observer { datastate ->
+                when (datastate) {
+                    is DataState.SuccessPostAnswer<List<Answer>> -> {
+                        if(datastate.data[0].id == questionListItem.id) {
+                            submitButton?.isEnabled = false
+                            answerText?.isEnabled = false
+                            submitButton?.text = resources.getString(R.string.post_answer_submit_button_text)
+                            submitTextMessage?.visibility = View.VISIBLE
+                            submitTextMessage?.text = resources.getString(R.string.post_answer_success_text_message)
+                            submitTextMessage?.setTextColor(Color.GREEN)
+                        }
+                    }
+                    is DataState.ErrorPostAnswer -> {
+                        if(datastate.data[0].id == questionListItem.id) {
+                            submitButton?.isEnabled = true
+                            answerText?.isEnabled = true
+                            submitButton?.text = resources.getString(R.string.post_answer_try_again_button_message)
+                            submitTextMessage?.visibility = View.VISIBLE
+                            submitTextMessage?.text = resources.getString(R.string.post_answer_try_again_text_message)
+                            submitTextMessage?.setTextColor(Color.RED)
+                        }
+                    }
+                }
             })
 
             submitButton?.setOnClickListener {

@@ -58,7 +58,9 @@ class MainRepositoryImpl(
             answers.add(answer)
             emit(DataState.SuccessPostAnswer(answers))
         } catch (e: Exception) {
-            emit(DataState.ErrorPostAnswer(e))
+            var answers: ArrayList<Answer> = ArrayList()
+            answers.add(answer)
+            emit(DataState.ErrorPostAnswer(answers))
             Log.e("postAnswer", "ERROR: " + e.toString())
         }
     }

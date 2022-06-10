@@ -2,6 +2,7 @@ package com.gkonstantakis.survey.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -10,7 +11,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.size
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -95,11 +95,15 @@ class QuestionsActivity : AppCompatActivity() {
                 is DataState.SuccessDatabaseAnswers<List<Answer>> -> {
                     if (!datastate.data.isNullOrEmpty()) {
                         for (data in datastate.data) {
-                            if (data != null) {
-                                surveyData.find { it.id == data.id }?.answer = data.answer
-                            }
+                            surveyData.find {
+                                it.id == data.id
+                            }?.answer = data.answer
                         }
                     }
+                    displayQuestionsList(surveyData)
+                    viewModel.setPageCount(1)
+                }
+                is DataState.Error -> {
                     displayQuestionsList(surveyData)
                     viewModel.setPageCount(1)
                 }
@@ -107,6 +111,7 @@ class QuestionsActivity : AppCompatActivity() {
         })
 
         viewModel.pageCount.observe(this, Observer {
+            Log.e(" viewModel.pageCount", "TREU")
             setupButtons(it)
             setupPageCounterText(it)
         })
@@ -123,7 +128,6 @@ class QuestionsActivity : AppCompatActivity() {
         snapHelper.attachToRecyclerView(questionsListRecyclerView)
         val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         questionsListRecyclerView.layoutManager = linearLayoutManager
-        questionsListRecyclerView.scrollToPosition(5)
         displayProgressBar(false)
     }
 
@@ -149,14 +153,14 @@ class QuestionsActivity : AppCompatActivity() {
 
     fun previousButtonClick(count: Int) {
         previousButton.setOnClickListener {
-            questionsListRecyclerView.scrollToPosition(count)
+            Handler().postDelayed(Runnable { questionsListRecyclerView.scrollToPosition(count) }, 500)
             viewModel.setPageCount(count - 1)
         }
     }
 
     fun nextButtonClick(count: Int) {
         nextButton.setOnClickListener {
-            questionsListRecyclerView.scrollToPosition(count)
+            Handler().postDelayed(Runnable { questionsListRecyclerView.scrollToPosition(count) }, 500)
             viewModel.setPageCount(count + 1)
         }
     }
