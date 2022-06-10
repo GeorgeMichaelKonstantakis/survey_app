@@ -153,14 +153,14 @@ class QuestionsActivity : AppCompatActivity() {
 
     fun previousButtonClick(count: Int) {
         previousButton.setOnClickListener {
-            Handler().postDelayed(Runnable { questionsListRecyclerView.scrollToPosition(count) }, 500)
+            questionsListRecyclerView.scrollToPosition(count)
             viewModel.setPageCount(count - 1)
         }
     }
 
     fun nextButtonClick(count: Int) {
         nextButton.setOnClickListener {
-            Handler().postDelayed(Runnable { questionsListRecyclerView.scrollToPosition(count) }, 500)
+            questionsListRecyclerView.scrollToPosition(count)
             viewModel.setPageCount(count + 1)
         }
     }
