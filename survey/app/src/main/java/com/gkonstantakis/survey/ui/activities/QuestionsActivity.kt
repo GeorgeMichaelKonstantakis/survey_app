@@ -42,6 +42,10 @@ class QuestionsActivity : AppCompatActivity() {
     lateinit var surveyData: MutableList<QuestionListItem>
     private lateinit var activityViewBinding: ActivityQuestionsBinding
 
+    private var questionsAdapter: QuestionsAdapter? = null
+    private var linearLayoutManager: LinearLayoutManager? = null
+    private var snapHelper: SurveySnapHelper? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityViewBinding = ActivityQuestionsBinding.inflate(layoutInflater)
@@ -111,22 +115,22 @@ class QuestionsActivity : AppCompatActivity() {
         })
 
         viewModel.pageCount.observe(this, Observer {
-            Log.e(" viewModel.pageCount", "TREU")
-            setupButtons(it)
             setupPageCounterText(it)
+            setupButtons(it)
         })
     }
 
     fun displayQuestionsList(data: List<QuestionListItem>){
-        questionsListRecyclerView.adapter = QuestionsAdapter(
+        questionsAdapter = QuestionsAdapter(
             data,
             surveyApplication.mainRepository,
             viewModel,
             this
         )
-        val snapHelper = SurveySnapHelper()
-        snapHelper.attachToRecyclerView(questionsListRecyclerView)
-        val linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        questionsListRecyclerView.adapter = questionsAdapter
+        snapHelper = SurveySnapHelper()
+        snapHelper?.attachToRecyclerView(questionsListRecyclerView)
+        linearLayoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         questionsListRecyclerView.layoutManager = linearLayoutManager
         displayProgressBar(false)
     }
@@ -137,15 +141,23 @@ class QuestionsActivity : AppCompatActivity() {
     }
 
     fun setupButtons(count: Int) {
+        Log.e("setupButtons",""+count.toString())
         if (count <= 1) {
             previousButton.visibility = View.GONE
             nextButton.visibility = View.VISIBLE
-        } else if (count >= questionsListRecyclerView.adapter?.itemCount!!) {
+        } else if (count >= questionsAdapter?.itemCount!!) {
             previousButton.visibility = View.VISIBLE
             nextButton.visibility = View.GONE
         } else {
             previousButton.visibility = View.VISIBLE
             nextButton.visibility = View.VISIBLE
+        }
+        if(count>0){
+            questionsListRecyclerView.recycledViewPool.setMaxRecycledViews(
+                questionsAdapter!!.getItemViewType(
+                    count
+                ), 0
+            )
         }
         previousButtonClick(count)
         nextButtonClick(count)
@@ -153,14 +165,14 @@ class QuestionsActivity : AppCompatActivity() {
 
     fun previousButtonClick(count: Int) {
         previousButton.setOnClickListener {
-            questionsListRecyclerView.scrollToPosition(count)
+            questionsListRecyclerView.smoothScrollToPosition(count-1)
             viewModel.setPageCount(count - 1)
         }
     }
 
     fun nextButtonClick(count: Int) {
         nextButton.setOnClickListener {
-            questionsListRecyclerView.scrollToPosition(count)
+            questionsListRecyclerView.smoothScrollToPosition(count+1)
             viewModel.setPageCount(count + 1)
         }
     }
