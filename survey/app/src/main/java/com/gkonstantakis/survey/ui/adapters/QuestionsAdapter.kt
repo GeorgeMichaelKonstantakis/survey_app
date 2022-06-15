@@ -42,9 +42,9 @@ class QuestionsAdapter(
 
     override fun onBindViewHolder(holder: QuestionsListViewHolder, position: Int) {
         holder.itemView.apply {
-            val questionListItem = questionsList[position]
 
-            Log.e("onBindViewHolder","ENTER: questionItem: "+questionListItem.toString())
+            val questionListItem = questionsList[holder.adapterPosition]
+            Log.e("holder.adapterPosition", "" + holder.adapterPosition.toString())
 
             var answerToSubmit = ""
 
@@ -113,6 +113,10 @@ class QuestionsAdapter(
 
     override fun getItemCount(): Int {
         return questionsList.size
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
     }
 
 }
